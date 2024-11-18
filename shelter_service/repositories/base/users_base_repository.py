@@ -37,7 +37,7 @@ class BaseAsyncUserRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_by_enail(self, email: str) -> User | None:
+    async def get_by_email(self, email: str) -> User | None:
         """Gets user by id"""
         pass
 

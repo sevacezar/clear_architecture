@@ -71,6 +71,6 @@ class AsyncUserCreateUseCase:
             password=hashed_password,
             is_admin=is_admin,
         )
-        await self.user_repo.create(user=new_user)
+        new_user: User = await self.user_repo.create(user=new_user)
 
         return new_user

@@ -17,3 +17,15 @@ class User:
 
     def to_dict(self):
         return asdict(self)
+
+    def update(self, params: dict) -> 'User':
+        for attr, value in params.items():
+            if hasattr(self, attr):
+                setattr(
+                    obj=self,
+                    name=attr,
+                    value=value,
+                )
+        return self
+
+    #TODO: Validation!!!

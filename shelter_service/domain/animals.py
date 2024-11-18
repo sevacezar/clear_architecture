@@ -37,6 +37,7 @@ class Animal:
     birth_date: datetime
     in_shelter_at: datetime
     created_at: datetime
+    updated_at: datetime
     status: Status
     ok_with_children: bool
     ok_with_cats: bool
