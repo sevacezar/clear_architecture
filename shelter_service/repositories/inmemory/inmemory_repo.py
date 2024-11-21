@@ -1,5 +1,5 @@
 from typing import Any
-from clear_architecture.shelter_service.domain.users import User
+from domain.users import User
 from repositories.base.users_base_repository import BaseSyncUserRepository
 
 class InMemoryUserRepo(BaseSyncUserRepository):
@@ -40,4 +40,3 @@ class InMemoryUserRepo(BaseSyncUserRepository):
         if not self._db_list:
             return 1
         return max([user.get('id', 0) for user in self._db_list]) + 1
-    

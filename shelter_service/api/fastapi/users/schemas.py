@@ -16,7 +16,7 @@ class CreateUserDTO(UserDTO):
     @field_validator('phone')
     @classmethod
     def validate_phone(cls, phone):
-        if not isinstance(phone, [str, int]):
+        if not isinstance(phone, (str, int)):
             raise TypeError('Invalid phone type value')
         phone_regex = re.compile(r'\+?\d{11}')
         if not phone_regex.match(str(phone)):
@@ -30,4 +30,4 @@ class GetUserDTO(UserDTO):
         orm_mode = True
 
 class GetMultipleUsersDTO(BaseModel):
-    users: list[GetUserDTO]
+    users: list[GetUserDTO] = []

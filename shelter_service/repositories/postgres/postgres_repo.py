@@ -2,7 +2,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from clear_architecture.shelter_service.domain.users import User
+from domain.users import User
 from repositories.base.users_base_repository import BaseAsyncUserRepository
 from repositories.postgres.models import UserSQLModel
 
