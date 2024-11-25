@@ -7,3 +7,4 @@ def get_fastapi_app() -> FastAPI:
     app.include_router(user_router)
 
     return app
+

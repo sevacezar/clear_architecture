@@ -19,10 +19,11 @@ class InMemoryUserRepo(BaseSyncUserRepository):
         return user_obj
 
     def get_all(self, offset: int = 0, limit: int | None = None) -> list[Any]:
-        users: list[Any] = self._db_list[offset]
+        # TODO: limit bihavior with offset and limit bellow zero
+        users: list[Any] = self._db_list[offset:]
         if limit:
-            users = users[:offset+limit]
-        return [User.from_dict(i_user) for i_user in self._db_list]
+            users = users[:limit]
+        return [User.from_dict(i_user) for i_user in users]
 
     def get_filtered(self, filters: dict[str, Any]) -> list[Any]:
         users_filtred: list[Any] = list(filter(
@@ -40,3 +41,6 @@ class InMemoryUserRepo(BaseSyncUserRepository):
         if not self._db_list:
             return 1
         return max([user.get('id', 0) for user in self._db_list]) + 1
+
+    def __len__(self):
+        return len(self._db_list)

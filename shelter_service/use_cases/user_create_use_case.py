@@ -21,7 +21,7 @@ class SyncUserCreateUseCase:
             email: str,
             phone: str,
             password: str,
-            is_admin: bool,
+            is_admin: bool = False,
         ) -> User:
         existing_user = self.user_repo.get_by_email(email=email)
         if existing_user:
@@ -30,7 +30,6 @@ class SyncUserCreateUseCase:
         hashed_password: str = self.hash_function(password)
 
         new_user: User = User(
-            id=None,
             name=name,
             email=email,
             phone=phone,
