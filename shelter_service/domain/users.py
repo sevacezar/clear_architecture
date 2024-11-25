@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict, fields
-from datetime import datetime
+from datetime import datetime, timezone
 
 @dataclass
 class User:
@@ -8,7 +8,7 @@ class User:
     phone: str
     password: str
     is_admin: bool = False
-    created_at: datetime = datetime.now()
+    created_at: datetime = datetime.now(tz=timezone.utc)
     id: int | None = None
 
 

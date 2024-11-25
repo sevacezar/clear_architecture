@@ -11,6 +11,13 @@ class InMemoryUserRepo(BaseSyncUserRepository):
         self._db_list.append(user.to_dict())
         return user
 
+    def get_by_id(self, id: int) -> User | None:
+        users: list[Any] = list(filter(lambda x: x.get('id') == id, self._db_list))
+        if not users:
+            return None
+        user_obj: User = User.from_dict(users[0])
+        return user_obj
+
     def get_by_email(self, email: str) -> User | None:
         users: list[Any] = list(filter(lambda x: x.get('email') == email, self._db_list))
         if not users:
@@ -37,7 +44,7 @@ class InMemoryUserRepo(BaseSyncUserRepository):
             return None
         self._db_list = [user for user in self._db_list if user.get('id') != id]
 
-    def _generate_id(self):
+    def _generate_id(self) -> int:
         if not self._db_list:
             return 1
         return max([user.get('id', 0) for user in self._db_list]) + 1

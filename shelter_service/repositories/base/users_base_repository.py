@@ -10,6 +10,11 @@ class BaseSyncUserRepository(ABC):
         pass
 
     @abstractmethod
+    def get_by_id(self, id: int) -> User | None:
+        """Gets user by id"""
+        pass
+
+    @abstractmethod
     def get_by_email(self, email: str) -> User | None:
         """Gets user by email"""
         pass
@@ -34,6 +39,11 @@ class BaseAsyncUserRepository(ABC):
     @abstractmethod
     async def create(self, user: User) -> User:
         """Creates new user"""
+        pass
+
+    @abstractmethod
+    async def get_by_id(self, id: int) -> User | None:
+        """Gets user by id"""
         pass
 
     @abstractmethod

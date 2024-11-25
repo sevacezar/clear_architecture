@@ -1,6 +1,30 @@
-from dataclasses import dataclass, asdict
-from datetime import datetime
+from dataclasses import dataclass, asdict, field, fields
+from datetime import datetime, timezone
 from enum import Enum
+
+@dataclass
+class Image:
+    relative_path: str | None = None
+    description: str | None = None
+    id: int | None = None
+
+    def __bool__(self):
+        return True
+
+    @classmethod
+    def from_dict(cls, image_dict: dict) -> 'Image':
+        return cls(**image_dict)
+
+    def to_dict(self):
+        return asdict(self)
+
+    def generate_relative_path(self, prefix: str, file_extension: str):
+        if self.id is None:
+            raise ValueError('id is not set. Relative path cannot be generated.')
+        if not file_extension.startswith('.'):
+            file_extension = '.' + file_extension
+        self.relative_path = prefix + str(self.id) + file_extension
+
 
 class AnimalType(Enum):
     cat: str = 'cat'
@@ -26,25 +50,39 @@ class Status(Enum):
 
 @dataclass
 class Animal:
-    id: int | None
     name: str
-    type: AnimalType
-    gender: AnimalGender
     color: str
     weight: int
-    breed: str
-    coat: CoatType
     birth_date: datetime
     in_shelter_at: datetime
-    created_at: datetime
-    updated_at: datetime
-    status: Status
-    ok_with_children: bool
-    ok_with_cats: bool
-    ok_with_dogs: bool
-    has_vaccinations: bool
-    is_sterilized: bool
     description: str
+    breed: str = 'breedless'
+    coat: CoatType = CoatType.medium.value
+    type: AnimalType = AnimalType.dog.value
+    gender: AnimalGender = AnimalGender.male.value
+    status: Status = Status.available.value
+    ok_with_children: bool = True
+    ok_with_cats: bool = True
+    ok_with_dogs: bool = True
+    has_vaccinations: bool = True
+    is_sterilized: bool = True
+    created_at: datetime = datetime.now(tz=timezone.utc)
+    updated_at: datetime = None
+    id: int | None = None
+    images: list[Image] = field(default_factory=list)
+
+    def __post_init__(self):
+        if self.updated_at is None:
+            self.updated_at = self.created_at
+
+    def add_images(self, images: list[Image]) -> None:
+        self.images.extend(images)
+
+    def remove_images(self, image_ids: list[int]) -> None:
+        self.images = [image for image in self.images if image.id not in image_ids]
+
+    def __bool__(self):
+        return True
 
     @classmethod
     def from_dict(cls, animal_dict: dict) -> 'Animal':
@@ -52,3 +90,11 @@ class Animal:
 
     def to_dict(self):
         return asdict(self)
+
+    def update(self, params: dict) -> 'Animal':
+        field_names: set = {field.name for field in fields(self)}
+        for attr, value in params.items():
+            if attr in field_names:
+                self.__setattr__(attr, value)
+        self.updated_at = datetime.now(tz=timezone.utc)
+        return self

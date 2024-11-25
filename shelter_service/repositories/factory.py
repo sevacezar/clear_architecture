@@ -1,7 +1,7 @@
 from typing import Any
 from config import DBConfig
 from repositories.base.users_base_repository import BaseAsyncUserRepository, BaseSyncUserRepository
-from repositories.inmemory.inmemory_repo import InMemoryUserRepo
+from clear_architecture.shelter_service.repositories.inmemory.inmemory_user_repo import InMemoryUserRepo
 from repositories.postgres.postgres_repo import PostgresUserRepo
 # mongoDB
 
