@@ -13,6 +13,9 @@ class InMemoryAnimalRepo(BaseSyncAnimalRepository):
         for image in animal.images:
             image.id = image_id
             image_id += 1
+            image.generate_relative_path(
+                prefix=base_images_path,
+                )
         self._db_list.append(animal.to_dict())
         return animal
 

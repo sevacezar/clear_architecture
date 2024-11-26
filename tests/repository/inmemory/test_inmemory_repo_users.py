@@ -2,7 +2,7 @@ from datetime import datetime
 import pytest
 
 from domain.users import User
-from repositories.inmemory.inmemory_repo import InMemoryUserRepo
+from repositories.inmemory.inmemory_user_repo import InMemoryUserRepo
 
 @pytest.fixture(scope='function')
 def users_list() -> list[dict]:

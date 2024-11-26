@@ -3,6 +3,7 @@ from time import sleep
 import pytest
 
 from domain.animals import Animal, Image
+from domain.exceptions import MissingFileExtension
 
 
 @pytest.fixture(scope='function')
@@ -38,8 +39,8 @@ def animal(animal_dict: dict) -> Animal:
 @pytest.fixture(scope='function')
 def images() -> list[Image]:
     images_dict: list[dict] = [
-        {'id': 1, 'relative_path': 'imgs/1', 'description': 'some description 1'},
-        {'id': 2, 'relative_path': 'imgs/2', 'description': 'some description 2'},
+        {'id': 1, 'name': 'some_image1.png', 'relative_path': 'imgs/1', 'description': 'some description 1'},
+        {'id': 2, 'name': 'some_image2.png', 'relative_path': 'imgs/2', 'description': 'some description 2'},
     ]
     images: list[Image] = [
         Image(**i_img_dict) for i_img_dict in images_dict
@@ -158,60 +159,83 @@ def test_update_animal(animal: Animal):
 
 def test_image_init():
     id: int = 1
+    name: str = 'some_image.png'
     ralative_path: str = 'imgs/1.png'
     descripton: str = 'Funny'
     image: Image = Image(
+        name=name,
         id=id,
         relative_path=ralative_path,
         description=descripton
     )
     assert image
+    assert image.name == name
     assert image.id == id
     assert image.relative_path == ralative_path
     assert image.description == descripton
 
 def test_image_generate_path():
     id: int = 1
+    name: str = 'some_image.png'
     prefix: str = 'imgs/'
-    extension: str = 'png'
     image: Image = Image(
         id=id,
+        name=name,
     )
-    image.generate_relative_path(prefix=prefix, file_extension=extension)
+    image.generate_relative_path(prefix=prefix)
     assert image
+    assert image.name == name
     assert image.id == id
-    assert image.relative_path == f'{prefix}{image.id}.{extension}'
+    image_extension: str = name.split('.')[-1]
+    assert image.relative_path == f'{prefix}{image.id}.{image_extension}'
+
+def test_image_generate_path_without_extension():
+    id: int = 1
+    name: str = 'some_image'
+    prefix: str = 'imgs/'
+    image: Image = Image(
+        id=id,
+        name=name,
+    )
+    with pytest.raises(MissingFileExtension):
+        image.generate_relative_path(prefix=prefix)
+
 
 def test_image_generate_path_without_id():
+    name: str = 'some_image.png'
     prefix: str = 'imgs/'
-    extension: str = 'png'
-    image: Image = Image()
+    image: Image = Image(name=name)
     with pytest.raises(ValueError):
-        image.generate_relative_path(prefix=prefix, file_extension=extension)
+        image.generate_relative_path(prefix=prefix)
 
 def test_image_from_dict():
     image_dict: dict = {
         'id': 1,
+        'name': 'some_image.png',
         'relative_path': 'imgs/1.png',
         'description': 'Funny',
     }
     image: Image = Image.from_dict(image_dict)
     assert image
+    assert image.name == image_dict.get('name')
     assert image.id == image_dict.get('id')
     assert image.relative_path == image_dict.get('relative_path')
     assert image.description == image_dict.get('description')
 
 def test_image_to_dict():
+    name: str = 'some_image.png'
     id: int = 1
     relative_path: str = 'imgs/1.png'
     description: str = 'Funny'
     image: Image = Image(
+        name=name,
         id=id,
         relative_path=relative_path,
         description=description,
     )
     image_dict: dict = image.to_dict()
     assert image_dict
+    assert image.name == image_dict.get('name')
     assert image.id == image_dict.get('id')
     assert image.relative_path == image_dict.get('relative_path')
     assert image.description == image_dict.get('description')
@@ -221,6 +245,7 @@ def test_animal_init_with_images(animal_dict: dict, images: list[Image]):
     animal.images = images
     assert animal
     assert animal.images
+    assert animal.images[0].name == images[0].name
     assert animal.images[0].id == images[0].id
     assert animal.images[0].relative_path == images[0].relative_path
     assert animal.images[0].description == images[0].description
@@ -229,6 +254,7 @@ def test_add_images_to_animal(animal: Animal, images: list[Image]):
     assert animal.images == []
     animal.add_images(images=images)
     assert animal.images
+    assert animal.images[0].name == images[0].name
     assert animal.images[0].id == images[0].id
     assert animal.images[0].relative_path == images[0].relative_path
     assert animal.images[0].description == images[0].description
@@ -238,6 +264,7 @@ def test_remove_images_to_animal(animal: Animal, images: list[Image]):
     start_images_count: int = len(animal.images)
     animal.remove_images([1])
     assert len(animal.images) == start_images_count - 1
+    assert animal.images[0].name == images[1].name
     assert animal.images[0].id == images[1].id
     assert animal.images[0].relative_path == images[1].relative_path
     assert animal.images[0].description == images[1].description
@@ -251,6 +278,7 @@ def test_animal_to_dict_with_images(animal: Animal, images: list[Image]):
 
     assert images_list
     assert len(images_list) == len(animal.images)
+    assert images_list[0].get('name') == animal.images[0].name
     assert images_list[0].get('id') == animal.images[0].id
     assert images_list[0].get('relative_path') == animal.images[0].relative_path
     assert images_list[0].get('description') == animal.images[0].description

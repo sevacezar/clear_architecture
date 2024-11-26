@@ -36,7 +36,9 @@ def animals_list() -> list[dict]:
 
 class TestCreateAnimal:
     def test_inmemory_create_animal(self, animals_list: list[dict]):
-        repo = InMemoryAnimalRepo(db_list=animals_list)
+        repo = InMemoryAnimalRepo(
+            db_list=animals_list,
+            base_images_)
         repo_start_len: int = len(repo)
 
         animal: Animal = Animal(
@@ -44,17 +46,23 @@ class TestCreateAnimal:
             color='black',
             weight=7,
             birth_date=datetime(2019, 1, 1),
-            in_shelter_at=datetime(2024, 1, 1)
+            in_shelter_at=datetime(2024, 1, 1),
             description='Pretty dog',
-            images=[Image(relative_path)]
+            images=[Image(description='Super photo')],
         )
-        saved_user: User = repo.create(user=user)
+        saved_animal: Animal = repo.create(animal=animal)
 
         assert len(repo) == repo_start_len + 1
-        assert saved_user.id == repo_start_len + 1
-        assert saved_user.name == 'User4'
-        assert saved_user.email == 'user4@gmail.com'
-        assert saved_user.phone == '+79129999904'
-        assert saved_user.password == 'password4_hashed'
-        assert saved_user.is_admin == False
-        assert isinstance(saved_user.created_at, datetime)
+        assert saved_animal.id == repo_start_len + 1
+        assert saved_animal.name == animal.name
+        assert saved_animal.weight == animal.weight
+        assert saved_animal.in_shelter_at == animal.in_shelter_at
+        assert saved_animal.description == animal.description
+        assert saved_animal.birth_date == animal.birth_date
+        assert saved_animal.images
+        assert saved_animal.images[0].id == 4
+
+
+        assert saved_animal.password == 'password4_hashed'
+        assert saved_animal.is_admin == False
+        assert isinstance(saved_animal.created_at, datetime)

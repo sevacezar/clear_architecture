@@ -2,8 +2,11 @@ from dataclasses import dataclass, asdict, field, fields
 from datetime import datetime, timezone
 from enum import Enum
 
+from domain.exceptions import MissingFileExtension
+
 @dataclass
 class Image:
+    name: str
     relative_path: str | None = None
     description: str | None = None
     id: int | None = None
@@ -18,12 +21,13 @@ class Image:
     def to_dict(self):
         return asdict(self)
 
-    def generate_relative_path(self, prefix: str, file_extension: str):
+    def generate_relative_path(self, prefix: str):
         if self.id is None:
             raise ValueError('id is not set. Relative path cannot be generated.')
-        if not file_extension.startswith('.'):
-            file_extension = '.' + file_extension
-        self.relative_path = prefix + str(self.id) + file_extension
+        if len(self.name.split('.')) == 1:
+            raise MissingFileExtension('Missing image extension.')
+        image_extension: str = self.name.split('.')[-1]
+        self.relative_path = prefix + str(self.id) + '.' + image_extension
 
 
 class AnimalType(Enum):
