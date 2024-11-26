@@ -38,7 +38,7 @@ class TestCreateAnimal:
     def test_inmemory_create_animal(self, animals_list: list[dict]):
         repo = InMemoryAnimalRepo(
             db_list=animals_list,
-            base_images_)
+            base_images_path='imgs/')
         repo_start_len: int = len(repo)
 
         animal: Animal = Animal(
@@ -48,7 +48,7 @@ class TestCreateAnimal:
             birth_date=datetime(2019, 1, 1),
             in_shelter_at=datetime(2024, 1, 1),
             description='Pretty dog',
-            images=[Image(description='Super photo')],
+            images=[Image(name='funny.png', description='Super photo')],
         )
         saved_animal: Animal = repo.create(animal=animal)
 
@@ -61,8 +61,26 @@ class TestCreateAnimal:
         assert saved_animal.birth_date == animal.birth_date
         assert saved_animal.images
         assert saved_animal.images[0].id == 4
+        assert saved_animal.images[0].name == 'funny.png'
+        assert saved_animal.images[0].description == 'Super photo'
+        assert saved_animal.images[0].relative_path == 'imgs/4.png'
 
+class TestGetAnimalById:
+    def test_inmemory_get_animal_by_id(self, animals_list: list[dict]):
+        repo = InMemoryAnimalRepo(
+            db_list=animals_list,
+            base_images_path='imgs/')
+        search_id: int = 1
+        search_animal: Animal = repo.get_by_id(id=search_id)
 
-        assert saved_animal.password == 'password4_hashed'
-        assert saved_animal.is_admin == False
-        assert isinstance(saved_animal.created_at, datetime)
+        assert search_animal
+        assert search_animal.id == search_id
+
+    def test_inmemory_get_animal_by_id_not_found(self, animals_list: list[dict]):
+        repo = InMemoryAnimalRepo(
+            db_list=animals_list,
+            base_images_path='imgs/')
+        search_id: int = 100
+        search_animal: Animal = repo.get_by_id(id=search_id)
+
+        assert search_animal is None

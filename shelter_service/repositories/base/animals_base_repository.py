@@ -30,7 +30,7 @@ class BaseSyncAnimalRepository(ABC):
         pass
 
     @abstractmethod
-    def update_by_id(self, id: int, params: dict[str, Any]) -> Animal:
+    def update_by_id(self, id: int, params: dict[str, Any]) -> Animal | None:
         """Updates animal"""
         pass
 
