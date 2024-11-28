@@ -39,8 +39,8 @@ def animal(animal_dict: dict) -> Animal:
 @pytest.fixture(scope='function')
 def images() -> list[Image]:
     images_dict: list[dict] = [
-        {'id': 1, 'name': 'some_image1.png', 'relative_path': 'imgs/1', 'description': 'some description 1'},
-        {'id': 2, 'name': 'some_image2.png', 'relative_path': 'imgs/2', 'description': 'some description 2'},
+        {'id': 1, 'name': 'some_image1.png', 'relative_path': 'imgs/1.png', 'description': 'some description 1'},
+        {'id': 2, 'name': 'some_image2.png', 'relative_path': 'imgs/2.png', 'description': 'some description 2'},
     ]
     images: list[Image] = [
         Image(**i_img_dict) for i_img_dict in images_dict
@@ -249,6 +249,39 @@ def test_animal_init_with_images(animal_dict: dict, images: list[Image]):
     assert animal.images[0].id == images[0].id
     assert animal.images[0].relative_path == images[0].relative_path
     assert animal.images[0].description == images[0].description
+
+def test_animal_with_images_from_dict(animal_dict: dict):
+    images_list: list[dict] = [
+        {'id': 1, 'name': 'some_image1.png', 'relative_path': 'imgs/1.png', 'description': 'some description 1'},
+        {'id': 2, 'name': 'some_image2.png', 'relative_path': 'imgs/2.png', 'description': 'some description 2'},
+    ]
+    animal_dict['images'] = images_list
+    animal: Animal = Animal.from_dict(animal_dict)
+    assert animal
+    assert animal.name == animal_dict.get('name')
+    assert animal.color == animal_dict.get('color')
+    assert animal.weight == animal_dict.get('weight')
+    assert animal.birth_date == animal_dict.get('birth_date')
+    assert animal.in_shelter_at == animal_dict.get('in_shelter_at')
+    assert animal.updated_at == animal_dict.get('updated_at')
+    assert animal.description == animal_dict.get('description')
+    assert animal.breed == animal_dict.get('breed')
+    assert animal.coat == animal_dict.get('coat')
+    assert animal.type == animal_dict.get('type')
+    assert animal.gender == animal_dict.get('gender')
+    assert animal.status == animal_dict.get('status')
+    assert animal.ok_with_children == animal_dict.get('ok_with_children')
+    assert animal.ok_with_cats == animal_dict.get('ok_with_cats')
+    assert animal.ok_with_dogs == animal_dict.get('ok_with_dogs')
+    assert animal.has_vaccinations == animal_dict.get('has_vaccinations')
+    assert animal.is_sterilized == animal_dict.get('is_sterilized')
+    assert animal.created_at == animal_dict.get('created_at')
+    assert animal.id == animal_dict.get('id')
+    assert animal.images
+    assert animal.images[0].id == images_list[0].get('id')
+    assert animal.images[0].name == images_list[0].get('name')
+    assert animal.images[0].relative_path == images_list[0].get('relative_path')
+    assert animal.images[0].description == images_list[0].get('description')
 
 def test_add_images_to_animal(animal: Animal, images: list[Image]):
     assert animal.images == []

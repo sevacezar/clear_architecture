@@ -90,7 +90,10 @@ class Animal:
 
     @classmethod
     def from_dict(cls, animal_dict: dict) -> 'Animal':
-        return cls(**animal_dict)
+        animal: 'Animal' = cls(**animal_dict)
+        if animal.images:
+            animal.images = [Image.from_dict(image) for image in animal.images]
+        return animal
 
     def to_dict(self):
         return asdict(self)
